@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { useToast } from '@/composables/useToast'
@@ -20,13 +20,83 @@ const phone = ref('')
 const role = ref<UserRole>('customer')
 const isLoading = ref(false)
 
+const touched = ref({
+  firstName: false,
+  lastName: false,
+  email: false,
+  username: false,
+  password: false,
+  phone: false,
+})
+
+// Validation rules
+const firstNameError = computed(() => {
+  if (!touched.value.firstName) return ''
+  if (!firstName.value.trim()) return 'First name is required'
+  if (firstName.value.trim().length < 2) return 'Must be at least 2 characters'
+  return ''
+})
+
+const lastNameError = computed(() => {
+  if (!touched.value.lastName) return ''
+  if (!lastName.value.trim()) return 'Last name is required'
+  return ''
+})
+
+const emailError = computed(() => {
+  if (!touched.value.email) return ''
+  if (!email.value.trim()) return 'Email is required'
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) return 'Enter a valid email address'
+  return ''
+})
+
+const phoneError = computed(() => {
+  if (!touched.value.phone) return ''
+  if (!phone.value.trim()) return 'Phone number is required'
+  if (phone.value.trim().length < 9) return 'Enter a valid phone number'
+  return ''
+})
+
+const usernameError = computed(() => {
+  if (!touched.value.username) return ''
+  if (!username.value.trim()) return 'Username is required'
+  if (username.value.trim().length < 3) return 'Must be at least 3 characters'
+  if (!/^[a-zA-Z0-9_]+$/.test(username.value)) return 'Only letters, numbers and underscores'
+  return ''
+})
+
+const passwordError = computed(() => {
+  if (!touched.value.password) return ''
+  if (!password.value) return 'Password is required'
+  if (password.value.length < 6) return 'Must be at least 6 characters'
+  return ''
+})
+
+const isFormValid = computed(() => {
+  return (
+    firstName.value.trim().length >= 2 &&
+    lastName.value.trim().length >= 1 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) &&
+    phone.value.trim().length >= 9 &&
+    username.value.trim().length >= 3 &&
+    password.value.length >= 6
+  )
+})
+
+function touchAll() {
+  Object.keys(touched.value).forEach((key) => {
+    touched.value[key as keyof typeof touched.value] = true
+  })
+}
+
 async function handleRegister() {
-  if (!firstName.value || !username.value || !password.value) {
+  touchAll()
+  if (!isFormValid.value) {
     return
   }
-  isLoading.value = true
 
-  // Simulate registration delay then login with demo account
+  isLoading.value = true
   await new Promise((r) => setTimeout(r, 800))
 
   const result = await authStore.login({
@@ -47,7 +117,6 @@ async function handleRegister() {
 <template>
   <div class="min-h-screen bg-white dark:bg-slate-900 flex flex-col p-6">
 
-    <!-- Back button -->
     <button
       @click="$router.back()"
       class="self-start flex items-center gap-2 text-slate-400 hover:text-slate-600 mb-6 transition-colors"
@@ -55,11 +124,8 @@ async function handleRegister() {
       ← Back
     </button>
 
-    <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-2xl font-display font-bold text-slate-900 dark:text-white">
-        Create Account
-      </h1>
+      <h1 class="text-2xl font-display font-bold text-slate-900 dark:text-white">Create Account</h1>
       <p class="text-sm text-slate-400 mt-1">Join FixMate today</p>
     </div>
 
@@ -80,11 +146,22 @@ async function handleRegister() {
       </button>
     </div>
 
-    <!-- Form fields -->
     <div class="space-y-3 flex-1">
       <div class="grid grid-cols-2 gap-3">
-        <AppInput v-model="firstName" label="First Name" placeholder="John" />
-        <AppInput v-model="lastName" label="Last Name" placeholder="Doe" />
+        <AppInput
+          v-model="firstName"
+          label="First Name"
+          placeholder="John"
+          :error="firstNameError"
+          @blur="touched.firstName = true"
+        />
+        <AppInput
+          v-model="lastName"
+          label="Last Name"
+          placeholder="Doe"
+          :error="lastNameError"
+          @blur="touched.lastName = true"
+        />
       </div>
       <AppInput
         v-model="email"
@@ -92,6 +169,8 @@ async function handleRegister() {
         type="email"
         placeholder="john@email.com"
         icon="📧"
+        :error="emailError"
+        @blur="touched.email = true"
       />
       <AppInput
         v-model="phone"
@@ -99,12 +178,16 @@ async function handleRegister() {
         type="tel"
         placeholder="+94 77 123 4567"
         icon="📱"
+        :error="phoneError"
+        @blur="touched.phone = true"
       />
       <AppInput
         v-model="username"
         label="Username"
         placeholder="johndoe"
         icon="👤"
+        :error="usernameError"
+        @blur="touched.username = true"
       />
       <AppInput
         v-model="password"
@@ -112,26 +195,33 @@ async function handleRegister() {
         type="password"
         placeholder="••••••••"
         icon="🔒"
+        :error="passwordError"
+        @blur="touched.password = true"
       />
     </div>
 
-    <!-- Register button -->
+    <!-- Form level error summary -->
+    <div
+      v-if="!isFormValid && Object.values(touched.value).some(Boolean)"
+      class="mt-4 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl px-4 py-3"
+    >
+      <span class="text-sm">⚠️</span>
+      <p class="text-xs text-red-600 dark:text-red-400">Please fix the errors above before continuing</p>
+    </div>
+
     <AppButton
       variant="primary"
       :full-width="true"
       :loading="isLoading"
-      :disabled="!firstName || !username || !password"
       @click="handleRegister"
-      class="mt-6"
+      class="mt-4"
     >
       Create Account
     </AppButton>
 
     <p class="text-center text-xs text-slate-400 mt-4">
       Already have an account?
-      <RouterLink to="/auth/login" class="text-primary-600 font-semibold">
-        Sign In
-      </RouterLink>
+      <RouterLink to="/auth/login" class="text-primary-600 font-semibold">Sign In</RouterLink>
     </p>
   </div>
 </template>
