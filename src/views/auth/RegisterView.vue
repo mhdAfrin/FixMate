@@ -20,7 +20,7 @@ const phone = ref('')
 const role = ref<UserRole>('customer')
 const isLoading = ref(false)
 
-const touched = ref({
+const touched = ref<Record<string, boolean>>({
   firstName: false,
   lastName: false,
   email: false,
@@ -29,22 +29,21 @@ const touched = ref({
   phone: false,
 })
 
-// Validation rules
 const firstNameError = computed(() => {
-  if (!touched.value.firstName) return ''
+  if (!touched.value['firstName']) return ''
   if (!firstName.value.trim()) return 'First name is required'
   if (firstName.value.trim().length < 2) return 'Must be at least 2 characters'
   return ''
 })
 
 const lastNameError = computed(() => {
-  if (!touched.value.lastName) return ''
+  if (!touched.value['lastName']) return ''
   if (!lastName.value.trim()) return 'Last name is required'
   return ''
 })
 
 const emailError = computed(() => {
-  if (!touched.value.email) return ''
+  if (!touched.value['email']) return ''
   if (!email.value.trim()) return 'Email is required'
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value)) return 'Enter a valid email address'
@@ -52,14 +51,14 @@ const emailError = computed(() => {
 })
 
 const phoneError = computed(() => {
-  if (!touched.value.phone) return ''
+  if (!touched.value['phone']) return ''
   if (!phone.value.trim()) return 'Phone number is required'
   if (phone.value.trim().length < 9) return 'Enter a valid phone number'
   return ''
 })
 
 const usernameError = computed(() => {
-  if (!touched.value.username) return ''
+  if (!touched.value['username']) return ''
   if (!username.value.trim()) return 'Username is required'
   if (username.value.trim().length < 3) return 'Must be at least 3 characters'
   if (!/^[a-zA-Z0-9_]+$/.test(username.value)) return 'Only letters, numbers and underscores'
@@ -67,7 +66,7 @@ const usernameError = computed(() => {
 })
 
 const passwordError = computed(() => {
-  if (!touched.value.password) return ''
+  if (!touched.value['password']) return ''
   if (!password.value) return 'Password is required'
   if (password.value.length < 6) return 'Must be at least 6 characters'
   return ''
@@ -86,15 +85,13 @@ const isFormValid = computed(() => {
 
 function touchAll() {
   Object.keys(touched.value).forEach((key) => {
-    touched.value[key as keyof typeof touched.value] = true
+    touched.value[key] = true
   })
 }
 
 async function handleRegister() {
   touchAll()
-  if (!isFormValid.value) {
-    return
-  }
+  if (!isFormValid.value) return
 
   isLoading.value = true
   await new Promise((r) => setTimeout(r, 800))
@@ -125,7 +122,9 @@ async function handleRegister() {
     </button>
 
     <div class="mb-6">
-      <h1 class="text-2xl font-display font-bold text-slate-900 dark:text-white">Create Account</h1>
+      <h1 class="text-2xl font-display font-bold text-slate-900 dark:text-white">
+        Create Account
+      </h1>
       <p class="text-sm text-slate-400 mt-1">Join FixMate today</p>
     </div>
 
@@ -146,6 +145,7 @@ async function handleRegister() {
       </button>
     </div>
 
+    <!-- Form fields -->
     <div class="space-y-3 flex-1">
       <div class="grid grid-cols-2 gap-3">
         <AppInput
@@ -153,14 +153,14 @@ async function handleRegister() {
           label="First Name"
           placeholder="John"
           :error="firstNameError"
-          @blur="touched.firstName = true"
+          @blur="touched['firstName'] = true"
         />
         <AppInput
           v-model="lastName"
           label="Last Name"
           placeholder="Doe"
           :error="lastNameError"
-          @blur="touched.lastName = true"
+          @blur="touched['lastName'] = true"
         />
       </div>
       <AppInput
@@ -170,7 +170,7 @@ async function handleRegister() {
         placeholder="john@email.com"
         icon="📧"
         :error="emailError"
-        @blur="touched.email = true"
+        @blur="touched['email'] = true"
       />
       <AppInput
         v-model="phone"
@@ -179,7 +179,7 @@ async function handleRegister() {
         placeholder="+94 77 123 4567"
         icon="📱"
         :error="phoneError"
-        @blur="touched.phone = true"
+        @blur="touched['phone'] = true"
       />
       <AppInput
         v-model="username"
@@ -187,7 +187,7 @@ async function handleRegister() {
         placeholder="johndoe"
         icon="👤"
         :error="usernameError"
-        @blur="touched.username = true"
+        @blur="touched['username'] = true"
       />
       <AppInput
         v-model="password"
@@ -196,17 +196,19 @@ async function handleRegister() {
         placeholder="••••••••"
         icon="🔒"
         :error="passwordError"
-        @blur="touched.password = true"
+        @blur="touched['password'] = true"
       />
     </div>
 
-    <!-- Form level error summary -->
+    <!-- Error summary -->
     <div
       v-if="!isFormValid && Object.values(touched.value).some(Boolean)"
       class="mt-4 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl px-4 py-3"
     >
       <span class="text-sm">⚠️</span>
-      <p class="text-xs text-red-600 dark:text-red-400">Please fix the errors above before continuing</p>
+      <p class="text-xs text-red-600 dark:text-red-400">
+        Please fix the errors above before continuing
+      </p>
     </div>
 
     <AppButton
@@ -221,7 +223,9 @@ async function handleRegister() {
 
     <p class="text-center text-xs text-slate-400 mt-4">
       Already have an account?
-      <RouterLink to="/auth/login" class="text-primary-600 font-semibold">Sign In</RouterLink>
+      <RouterLink to="/auth/login" class="text-primary-600 font-semibold">
+        Sign In
+      </RouterLink>
     </p>
   </div>
 </template>
