@@ -1,0 +1,23 @@
+The aim 01: I wanted to plan and structure my Vue 3 project before starting to code
+Actual prompt: Hey, I have a mini project to build for my GUI Programming module. I need to build a Single Page Application called FixMate which is similar to Uber or PickMe but instead of booking rides, users book home service workers like mechanics, AC technicians, plumbers, electricians, carpenters, cleaners and painters. The app needs 5 main tabs which are Home, Services, Activity, Notifications and Account. There are two types of users, one is customers who need services and the other is workers who are looking for jobs, so the app needs to work differently for both. I need to use Vue 3 with Composition API, TypeScript with no any types, Vite, Tailwind CSS, Pinia for state management and Vue Router. Give me a complete folder structure, component hierarchy and architecture plan for this project?
+
+The aim 02: I need a help writing TypeScript interfaces because I am getting type errors
+Actual prompt: I'm getting errors in my Vue component because TypeScript doesn't know the shape of the data coming from the API. How do I write proper interfaces for a user object that has id, firstName, lastName, email, phone and image fields? I don't want to use any type.
+
+The aim 03: I wanted to build the login page but didn't know how to connect it to an API
+Actual prompt: I have a login form in Vue 3 and I want to call the DummyJSON auth/login endpoint when the user clicks sign in. How do I use fetch to post the username and password and then save the token I get back into localStorage? Also how do I show an error message if login fails?
+
+The aim 04: I was confused about Pinia stores and how to use them across components
+Actual prompt: can you explain how Pinia works in Vue 3? I want to save the logged in user's info so I can access it from any component without passing props everywhere. Show me how to create a store and use it in a component.
+
+The aim 05: I needed help making the bottom navigation bar highlight the active tab
+Actual prompt: I have a bottom nav bar with 5 tabs in Vue 3. How do I make the currently active tab show a different color? I'm using Vue Router and Tailwind CSS. Also I want a red badge to appear on the alerts tab when there are unread notifications.
+
+The aim 06: I wanted to build the services page where users can search and filter workers
+Actual prompt: Can you write the code for a services page in Vue 3? I want a search bar at the top where users can type and filter results, and below that category filter buttons like mechanic, plumber, electrician etc. When a category button is clicked it should show only workers from that category. I am using Pinia store for the data and Tailwind CSS for styling. Also show me how to connect the search input to the store.
+
+The aim 07: I had an error in my booking modal and could not figure out how to fix it
+Actual prompt: I am getting this error in my Vue 3 component "Property does not exist on type never" inside my BookingModal.vue file. I have a ref called selectedWorker that starts as null and when I try to access selectedWorker.value.firstName it gives this TypeScript error. How do I fix this? Also my booking confirm button is not doing anything when I click it, the function runs but nothing gets saved. Here is my code: const selectedWorker = ref(null) and the function createBooking is called but bookings array stays empty.
+
+The aim 08: I had a bug where dark mode wasn't being saved when the page refreshed
+Actual prompt: I added a dark mode toggle to my Vue app but when I refresh the page it resets to light mode. How do I save the dark mode preference so it stays even after refresh? I'm using Pinia and Tailwind with the dark class strategy.

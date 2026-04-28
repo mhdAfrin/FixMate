@@ -57,3 +57,4 @@ defineEmits<{ select: [worker: Worker] }>()
     </div>
   </div>
 </template>
+

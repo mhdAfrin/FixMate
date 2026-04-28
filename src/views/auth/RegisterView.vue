@@ -97,8 +97,8 @@ async function handleRegister() {
   await new Promise((r) => setTimeout(r, 800))
 
   const result = await authStore.login({
-    username: 'emilys',
-    password: 'emilyspass',
+    username: 'afrinhm',
+    password: 'afrin1234',
     role: role.value,
   })
 
